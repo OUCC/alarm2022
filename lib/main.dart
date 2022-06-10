@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'model/ringing_alarm_model.dart';
+import 'view/ringing_alarm_view.dart';
 
-void main() {
+void main() async {
+  setupRingingAlarm();
   runApp(const MyApp());
 }
 
@@ -102,10 +105,25 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            FloatingActionButton(
+              //RingingAlarmPageに飛ぶボタン
+              heroTag: 'ringing_alarm_page_button',
+              onPressed: () async {
+                // "push"で新規画面に遷移
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) {
+                    return const RingingAlarmTestPage(
+                        title: 'Ringing Alarm Test Page');
+                  }),
+                );
+              },
+              child: const Icon(Icons.alarm),
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'increment_button',
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
