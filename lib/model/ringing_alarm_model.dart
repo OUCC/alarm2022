@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'startup_process_model.dart';
 
 /// RingingAlarm の初期化をする。mainで呼ぶ。
 void setupRingingAlarm() {
@@ -36,6 +37,7 @@ class RingingAlarm {
   bool _notificationOnceFlag = false; //連続して通知ができないようにするフラグ
 
   DateTime get displayTime => _time;
+  bool get isTimerActive => _isTimerActive;
 
   ///コンストラクタ
   RingingAlarm();
@@ -77,6 +79,14 @@ class RingingAlarm {
     }
   }
 
+  //予約済みの通知のリストを取得
+  List<PendingNotificationRequest>? getPendingNotifications() {
+    () async {
+      return await flutterLocalNotificationsPlugin
+          .pendingNotificationRequests();
+    };
+  }
+
   //鳴っている通知を消す(正確には最新の通知)
   void resetNotification() {
     if (_notificationId != null) {
@@ -88,8 +98,21 @@ class RingingAlarm {
     _notificationOnceFlag = false;
   }
 
+  //指定のidの通知を消す
+  void delateNotification(int? nId) {
+    if (nId != null) {
+      flutterLocalNotificationsPlugin.cancel(nId); // 通知をキャンセル
+    }
+    _isTimerActive = false; // リセット
+    nId = null; // リセット
+    _pausedTime = null;
+    _notificationOnceFlag = false;
+  }
+
   // タイマーを開始する
   void startTimer() {
+    if (_isTimerActive) return;
+    _isTimerActive = true;
     _notificationOnceFlag = true;
     _timer = Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
       _time = _time.add(const Duration(milliseconds: -100));
@@ -117,9 +140,10 @@ class RingingAlarm {
   }
 
   //タイマーを止める
-  void cancelTimer() {
+  void stopTimer() {
     if (_timer != null && _timer!.isActive) {
       _timer!.cancel();
+      _isTimerActive = false;
     }
   }
 
@@ -130,6 +154,12 @@ class RingingAlarm {
           android:
               AndroidInitializationSettings('@mipmap/ic_launcher'), //通知アイコン
           iOS: IOSInitializationSettings()),
+      onSelectNotification: (payload) {
+        //通知をタップされた時に行う処理
+        StartUpProcess().startUp();
+        debugPrint(
+            'flutterLocalNotificationsPlugin.initialize.${payload.toString()}');
+      },
     );
     int notificationId =
         DateTime.now().hashCode; //現在時刻から生成しているが、通知を管理するIDを指定できる

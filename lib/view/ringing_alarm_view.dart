@@ -1,3 +1,4 @@
+import 'package:alarm2022/model/startup_process_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../model/ringing_alarm_model.dart';
@@ -85,26 +86,24 @@ class _RingingAlarmTestPageState extends State<RingingAlarmTestPage>
           FloatingActionButton(
             //タイマーの一時停止
             heroTag: 'stop_button',
-            onPressed: () {
-              _ringingAlarm.cancelTimer();
-            },
+            onPressed: _ringingAlarm.isTimerActive
+                ? () {
+                    _ringingAlarm.stopTimer();
+                  }
+                : null,
+            backgroundColor: _ringingAlarm.isTimerActive ? null : Colors.grey,
             child: const Text("Stop"),
-          ),
-          FloatingActionButton(
-            //タイマーのカウントダウン再開
-            heroTag: 'start_button',
-            onPressed: () {
-              _ringingAlarm.startTimer();
-            },
-            child: const Text("Start"),
           ),
           FloatingActionButton(
             //タイマーの時間をリセットしてスタート
             heroTag: 'restart_button',
-            onPressed: () {
-              _ringingAlarm.restartTimer();
-            },
-            child: const Text("Restart"),
+            onPressed: _ringingAlarm.isTimerActive
+                ? null
+                : () {
+                    _ringingAlarm.restartTimer();
+                  },
+            backgroundColor: _ringingAlarm.isTimerActive ? Colors.grey : null,
+            child: const Text("10sec"),
           ),
           FloatingActionButton(
             //鳴ってるアラームを止める

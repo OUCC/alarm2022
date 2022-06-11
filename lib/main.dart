@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'model/ringing_alarm_model.dart';
 import 'view/ringing_alarm_view.dart';
+import 'view/newpage_template.dart';
+import 'model/startup_process_model.dart';
 
 void main() async {
   setupRingingAlarm();
@@ -66,6 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //とりあえずここに置いてるだけ。
+    CurrentContext.context = context;
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -118,6 +122,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
               child: const Icon(Icons.alarm),
+            ),
+            FloatingActionButton(
+              //NewTempPageに飛ぶボタン
+              heroTag: 'newpagetemp_button',
+              onPressed: () async {
+                // "push"で新規画面に遷移
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) {
+                    return const NewPageTemp();
+                  }),
+                );
+              },
+              child: const Text("temp"),
+            ),
+            FloatingActionButton(
+              //MiniFuncを呼ぶボタン
+              heroTag: 'minifunc_button',
+              onPressed: () {
+                final isClearedMission = StartUpProcess().startAMiniFunc();
+                if (isClearedMission != null) {
+                  if (isClearedMission) _incrementCounter();
+                }
+              },
+              child: const Text("funcs"),
             ),
           ],
         ),
