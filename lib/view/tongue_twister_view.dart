@@ -11,16 +11,22 @@ class TongueTwisterPage extends StatefulWidget {
 }
 
 class _TongueTwisterPageState extends State<TongueTwisterPage> {
+  //modelの方の実体
   TongueTwisterModel ttm = TongueTwisterModel();
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     ttm.resetQuestion();
+    //表示更新用タイマー
     Timer.periodic(const Duration(milliseconds: 100), (Timer clockTimer) {
-      if (!mounted) {
-        return;
-      }
       setState(() {
         ttm.doneCheck();
       });

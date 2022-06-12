@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               "早口言葉:${ttIsCleared == null ? "未成功" : (ttIsCleared! ? "成功" : "失敗")}",
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headline6,
             )
           ],
         ),
