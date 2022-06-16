@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'model/ringing_alarm_model.dart';
 import 'view/ringing_alarm_view.dart';
+import 'view/tongue_twister_view.dart';
 
 void main() async {
   setupRingingAlarm();
@@ -31,6 +32,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool? ttIsCleared;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +58,22 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Icon(Icons.alarm),
             ),
+            FloatingActionButton(
+              heroTag: 'tongue_twister_page_button',
+              onPressed: () async {
+                ttIsCleared = await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) {
+                    return const TongueTwisterPage();
+                  }),
+                );
+                setState(() {});
+              },
+              child: const Icon(Icons.mic),
+            ),
+            Text(
+              "早口言葉:${ttIsCleared == null ? "未成功" : (ttIsCleared! ? "成功" : "失敗")}",
+              style: Theme.of(context).textTheme.headline6,
+            )
           ],
         ),
       ),
