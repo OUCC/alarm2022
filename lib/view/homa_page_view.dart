@@ -1,16 +1,30 @@
 // ignore_for_file: unnecessary_const
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../model/alarm_data.dart';
 import 'add_alarm_view.dart';
+import '../model/ringing_alarm_model.dart';
 import 'ringing_alarm_view.dart';
 import 'package:gap/gap.dart';
+import 'tongue_twister_view.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    //初期化処理
+    for (var alarmData in AlarmDataList.list) {
+      var dateTime = TimeOfDayToDateTime(alarmData.time);
+      if (DateTime.now().compareTo(dateTime) < 0) {
+        dateTime.add(const Duration(days: 1));
+      }
+      if (alarmData.isValid) {
+        RingingAlarm().scheduleNotification(alarmData.notificationId, dateTime);
+      }
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
@@ -49,7 +63,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   AlarmDataList.list[index].isValid = value;
                   AlarmDataList.save();
-                  print(AlarmDataList.list[index].cancelMethod);
+                  var dateTime =
+                      TimeOfDayToDateTime(AlarmDataList.list[index].time);
+                  if (DateTime.now().compareTo(dateTime) < 0) {
+                    dateTime.add(const Duration(days: 1));
+                  }
+                  if (AlarmDataList.list[index].isValid) {
+                    RingingAlarm().scheduleNotification(
+                        AlarmDataList.list[index].notificationId, dateTime);
+                  } else {
+                    RingingAlarm().cancelNotification(
+                        AlarmDataList.list[index].notificationId);
+                  }
                 });
               },
               subtitle: Text(AlarmDataList.list[index].cancelMethod),
@@ -67,56 +92,27 @@ class _MyHomePageState extends State<MyHomePage> {
             //AlarmAddPageに飛ぶボタン
             heroTag: 'alarm_add_page_button',
             onPressed: () async {
-              final alarmData = await Navigator.of(context).push(
+              AlarmData alarmData = await Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
                   // 遷移先の画面としてリスト追加画面を指定
                   return const AlarmAddPage();
                 }),
               );
-              if (alarmData != null) {
-                // キャンセルした場合は newListText が null となるので注意
-                setState(() {
-                  // リスト追加
-                  AlarmDataList.add(alarmData);
-                });
-              }
+              setState(() {
+                // リスト追加
+                AlarmDataList.add(alarmData);
+                AlarmDataList.save();
+                // TimeOfDayをDateTimeに変換
+                var dateTime = TimeOfDayToDateTime(alarmData.time);
+                if (DateTime.now().compareTo(dateTime) < 0) {
+                  dateTime.add(const Duration(days: 1));
+                }
+
+                RingingAlarm()
+                    .scheduleNotification(alarmData.notificationId, dateTime);
+              });
             },
             child: const Icon(Icons.add),
-          ),
-          const Gap(16),
-          FloatingActionButton(
-            // ringing_alarm_pageに飛ぶボタン
-            heroTag: 'ringing_alarm_page_button',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const RingingAlarmTestPage(),
-                ),
-              );
-            },
-            child: const Icon(Icons.running_with_errors),
-          ),
-          const Gap(16),
-          FloatingActionButton(
-            // アラームを保存するボタン
-            heroTag: 'save_button',
-            onPressed: () {
-              setState(() {
-                AlarmDataList.save();
-              });
-            },
-            child: const Icon(Icons.save),
-          ),
-          const Gap(16),
-          FloatingActionButton(
-            // load
-            heroTag: 'load_button',
-            onPressed: () {
-              setState(() {
-                AlarmDataList.load();
-              });
-            },
-            child: const Icon(Icons.file_download),
           ),
         ],
       ),
@@ -129,3 +125,14 @@ var alarmStopMethodIcon = {
   'FakeTime': const Icon(Icons.running_with_errors),
   'TongueTwister': const Icon(Icons.keyboard_voice),
 };
+
+// ignore: non_constant_identifier_names
+DateTime TimeOfDayToDateTime(TimeOfDay timeOfDay) {
+  return DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+    timeOfDay.hour,
+    timeOfDay.minute,
+  );
+}

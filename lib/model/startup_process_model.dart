@@ -1,32 +1,66 @@
+import 'package:alarm2022/model/alarm_data.dart';
+import 'package:alarm2022/view/CalculationProblem_s.dart';
+import 'package:alarm2022/view/FakeTime.dart';
+import 'package:alarm2022/view/tongue_twister_view.dart';
 import 'package:alarm2022/view/newpage_template.dart';
 import 'package:flutter/material.dart';
 import 'ringing_alarm_model.dart';
 
 class StartUpProcess {
   //このクラスでこれだけがアプリ起動時に呼ばれる
-  void startUp(int? nId) {
+  void startUp(int nId) {
     bool? isClearedMission;
     debugPrint("startUp");
+    debugPrint("nId: $nId");
 
     isClearedMission = null;
+
     //鳴ってる通知の設定に従って小機能の呼び出し
-    if (nId != null) {
-      startAMiniFunc().then((value) {
-        isClearedMission = value;
-        //クリアしたなら予約キャンセル
-        if (isClearedMission != null && isClearedMission!) {
-          RingingAlarm().cancelNotification(nId);
+    startAMiniFunc(nId).then((value) {
+      isClearedMission = value;
+      //クリアしたなら予約キャンセル
+      if (isClearedMission != null && isClearedMission!) {
+        RingingAlarm().cancelNotification(nId);
+        for (AlarmData alarmData in AlarmDataList.list) {
+          if (alarmData.notificationId == nId) {
+            DateTime dateTime = DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+              alarmData.time.hour,
+              alarmData.time.minute,
+            );
+            dateTime.add(const Duration(days: 1));
+
+            RingingAlarm()
+                .scheduleNotification(alarmData.notificationId, dateTime);
+          }
+          break;
         }
-      });
-    }
+      }
+    });
   }
 
   ///小機能に移る。情報の保存できてから引数とか追加
-  Future<bool?> startAMiniFunc() async {
+  Future<bool?> startAMiniFunc(notificationId) async {
     return await Navigator.of(CurrentContext.context!).push(
       MaterialPageRoute(builder: (context) {
+        debugPrint("startAMiniFunc");
+        var cancelMethod = "";
+        for (AlarmData alarmData in AlarmDataList.list) {
+          if (alarmData.notificationId == notificationId) {
+            cancelMethod = alarmData.cancelMethod;
+            break;
+          }
+        }
         //実際は保存した設定を参照し、小機能を動かす
-        switch (0) {
+        switch (cancelMethod) {
+          case "Calculation":
+            return const CalculationProblemPage();
+          case "FakeTime":
+            return const FakeTime();
+          case "TongueTwister":
+            return const TongueTwisterPage();
           default:
             //こんな感じでswitch-caseで分岐
             //ここを移動先のクラスに変更
