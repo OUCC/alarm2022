@@ -9,8 +9,10 @@ class NewPageTemp extends StatefulWidget {
 }
 
 class _NewPageTempState extends State<NewPageTemp> {
+  // ignore: non_constant_identifier_names
   int _counter_nptmp = 0;
 
+  // ignore: non_constant_identifier_names
   void _incrementCounter_nptmp() {
     setState(() {
       //画面内容を変更するならsetStateを呼ぶ必要がある。
@@ -23,7 +25,7 @@ class _NewPageTempState extends State<NewPageTemp> {
     return Scaffold(
       //ここにページのウィジェットを作っていきます。
       appBar: AppBar(
-        title: Text("NewPage"),
+        title: const Text("NewPage"),
       ),
       body: Center(
         child: Column(

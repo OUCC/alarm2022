@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_const
+
 import 'package:flutter/material.dart';
 import '../model/alarm_data.dart';
 import 'add_alarm_view.dart';
@@ -10,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -35,13 +38,24 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: ListView.builder(
-        itemCount: alarmDataList.length,
+        itemCount: AlarmDataList.list.length,
         itemBuilder: (context, index) {
           return Card(
-            child: ListTile(
-              leading: const FlutterLogo(),
-              title: Text(alarmDataList[index][0]),
-              subtitle: Text(alarmDataList[index][1] ? '課題' : '起床'),
+            child: SwitchListTile(
+              // 時刻を表示
+              title: Text(AlarmDataList.list[index].time.format(context)),
+              value: AlarmDataList.list[index].isValid,
+              onChanged: (value) {
+                setState(() {
+                  AlarmDataList.list[index].isValid = value;
+                  AlarmDataList.save();
+                  print(AlarmDataList.list[index].cancelMethod);
+                });
+              },
+              subtitle: Text(AlarmDataList.list[index].cancelMethod),
+              // calculation icon
+              secondary:
+                  alarmStopMethodIcon[AlarmDataList.list[index].cancelMethod],
             ),
           );
         },
@@ -53,17 +67,17 @@ class _MyHomePageState extends State<MyHomePage> {
             //AlarmAddPageに飛ぶボタン
             heroTag: 'alarm_add_page_button',
             onPressed: () async {
-              final newListText = await Navigator.of(context).push(
+              final alarmData = await Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
                   // 遷移先の画面としてリスト追加画面を指定
                   return const AlarmAddPage();
                 }),
               );
-              if (newListText != null) {
+              if (alarmData != null) {
                 // キャンセルした場合は newListText が null となるので注意
                 setState(() {
                   // リスト追加
-                  alarmDataList.add([newListText, false]);
+                  AlarmDataList.add(alarmData);
                 });
               }
             },
@@ -80,10 +94,38 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-            child: const Icon(Icons.alarm),
+            child: const Icon(Icons.running_with_errors),
+          ),
+          const Gap(16),
+          FloatingActionButton(
+            // アラームを保存するボタン
+            heroTag: 'save_button',
+            onPressed: () {
+              setState(() {
+                AlarmDataList.save();
+              });
+            },
+            child: const Icon(Icons.save),
+          ),
+          const Gap(16),
+          FloatingActionButton(
+            // load
+            heroTag: 'load_button',
+            onPressed: () {
+              setState(() {
+                AlarmDataList.load();
+              });
+            },
+            child: const Icon(Icons.file_download),
           ),
         ],
       ),
     );
   }
 }
+
+var alarmStopMethodIcon = {
+  'Calculation': const Icon(Icons.calculate),
+  'FakeTime': const Icon(Icons.running_with_errors),
+  'TongueTwister': const Icon(Icons.keyboard_voice),
+};

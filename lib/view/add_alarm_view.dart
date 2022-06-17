@@ -1,4 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import '../model/alarm_data.dart';
 
 class AlarmAddPage extends StatefulWidget {
   const AlarmAddPage({Key? key}) : super(key: key);
@@ -8,8 +12,13 @@ class AlarmAddPage extends StatefulWidget {
 }
 
 class _AlarmAddPageState extends State<AlarmAddPage> {
-  // 入力されたテキストをデータとして持つ
-  String _text = '';
+  // 入力された情報を持つ
+  final _alarmData = AlarmData(
+    time: const TimeOfDay(hour: 0, minute: 0),
+    cancelMethod: "TongueTwister",
+    isValid: true,
+    notificationId: Random().nextInt(100000000),
+  );
 
   // データを元に表示するWidget
   @override
@@ -24,20 +33,59 @@ class _AlarmAddPageState extends State<AlarmAddPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // 入力されたテキストを表示
-            Text(_text, style: const TextStyle(color: Colors.blue)),
-            const SizedBox(height: 8),
-            // テキスト入力
-            TextField(
-              // 入力されたテキストの値を受け取る（valueが入力されたテキスト）
-              onChanged: (String value) {
-                // データが変更したことを知らせる（画面を更新する）
-                setState(() {
-                  // データを変更
-                  _text = value;
-                });
+            // アラームを止める方法を選択する
+            const Text(
+              'アラームを止める方法を選択してください',
+              style: TextStyle(fontSize: 20),
+            ),
+            Column(
+              children: [
+                RadioListTile(
+                  value: "TongueTwister",
+                  groupValue: _alarmData.cancelMethod,
+                  onChanged: (value) {
+                    setState(() {
+                      _alarmData.cancelMethod = value.toString();
+                    });
+                  },
+                  title: const Text('トングUE TWISTER'),
+                ),
+                RadioListTile(
+                  value: "FakeTime",
+                  groupValue: _alarmData.cancelMethod,
+                  onChanged: (value) {
+                    setState(() {
+                      _alarmData.cancelMethod = value.toString();
+                    });
+                  },
+                  title: const Text('FAKE TIME'),
+                ),
+                RadioListTile(
+                  value: "Calculation",
+                  groupValue: _alarmData.cancelMethod,
+                  onChanged: (value) {
+                    setState(() {
+                      _alarmData.cancelMethod = value.toString();
+                    });
+                  },
+                  title: const Text('計算'),
+                )
+              ],
+            ),
+            const SizedBox(height: 16),
+            // 時刻を表示
+            Text(
+              _alarmData.time.format(context),
+              style: const TextStyle(fontSize: 48),
+            ),
+            // 時刻を入力するテキストフィールド
+            ElevatedButton(
+              child: const Text('時刻を入力'),
+              onPressed: () {
+                _selectTime(context);
               },
             ),
+            // テキスト入力
             const SizedBox(height: 8),
             SizedBox(
               // 横幅いっぱいに広げる
@@ -47,29 +95,37 @@ class _AlarmAddPageState extends State<AlarmAddPage> {
                 onPressed: () {
                   // "pop"で前の画面に戻る
                   // "pop"の引数から前の画面にデータを渡す
-                  Navigator.of(context).pop(_text);
+                  Navigator.of(context).pop(_alarmData);
                 },
                 child:
                     const Text('アラーム追加', style: TextStyle(color: Colors.white)),
               ),
             ),
-            const SizedBox(height: 8),
-            SizedBox(
-              // 横幅いっぱいに広げる
-              width: double.infinity,
-              // キャンセルボタン
-              child: TextButton(
-                // ボタンをクリックした時の処理
-                onPressed: () {
-                  // "pop"で前の画面に戻る
-                  Navigator.of(context).pop();
-                },
-                child: const Text('キャンセル'),
-              ),
-            ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // "pop"で前の画面に戻る
+          // "pop"の引数から前の画面にデータを渡す
+          Navigator.of(context).pop(_alarmData);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
+  }
+
+  _selectTime(BuildContext context) async {
+    TimeOfDay selectedTime = const TimeOfDay(hour: 0, minute: 0);
+    final TimeOfDay? timeOfDay = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+      initialEntryMode: TimePickerEntryMode.dial,
+    );
+    if (timeOfDay != null && timeOfDay != selectedTime) {
+      setState(() {
+        _alarmData.time = timeOfDay;
+      });
+    }
   }
 }
