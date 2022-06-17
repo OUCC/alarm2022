@@ -33,6 +33,7 @@ class _RingingAlarmTestPageState extends State<RingingAlarmTestPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    setupRingingAlarm();
     //現在時刻表示用だが画面の更新処理も担っている
     _clockTimer =
         Timer.periodic(const Duration(milliseconds: 100), (Timer clockTimer) {
@@ -112,6 +113,46 @@ class _RingingAlarmTestPageState extends State<RingingAlarmTestPage>
               _ringingAlarm.resetNotification();
             },
             child: const Text("Reset"),
+          ),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FloatingActionButton(
+            //指定時刻にアラームをセット
+            heroTag: 'set_alarm_button',
+            onPressed: () {
+              _ringingAlarm.scheduleNotification(
+                  0,
+                  //時刻指定
+                  DateTime.now().add(const Duration(seconds: 10)));
+            },
+            child: const Text("Set"),
+          ),
+          FloatingActionButton(
+            //予約表示
+            heroTag: 'print_PNR_button',
+            onPressed: () {
+              _ringingAlarm.printPendingNotificationRequests();
+            },
+            child: const Text("PNR"),
+          ),
+          FloatingActionButton(
+            //全キャンセル
+            heroTag: 'cancel_all_button',
+            onPressed: () {
+              _ringingAlarm.cancelAllNotifications();
+            },
+            child: const Text("Cancel   All"),
+          ),
+          FloatingActionButton(
+            //通知でデバッグ表示
+            heroTag: 'notice_button',
+            onPressed: () {
+              _ringingAlarm.notice("this is just a debug");
+            },
+            child: const Text("Notice"),
           ),
         ],
       )
