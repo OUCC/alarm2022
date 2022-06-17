@@ -9,14 +9,12 @@ class NewPageTemp extends StatefulWidget {
 }
 
 class _NewPageTempState extends State<NewPageTemp> {
-  // ignore: non_constant_identifier_names
-  int _counter_nptmp = 0;
+  int _counterNptmp = 0;
 
-  // ignore: non_constant_identifier_names
-  void _incrementCounter_nptmp() {
+  void _incrementCounterNptmp() {
     setState(() {
       //画面内容を変更するならsetStateを呼ぶ必要がある。
-      _counter_nptmp++;
+      _counterNptmp++;
     });
   }
 
@@ -25,7 +23,8 @@ class _NewPageTempState extends State<NewPageTemp> {
     return Scaffold(
       //ここにページのウィジェットを作っていきます。
       appBar: AppBar(
-        title: const Text("NewPage"),
+        //automaticallyImplyLeading: false,//これで上部の戻る矢印を消せる
+        title: Text(widget.title ?? "Titleless NewPageTemp"),
       ),
       body: Center(
         child: Column(
@@ -35,7 +34,7 @@ class _NewPageTempState extends State<NewPageTemp> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter_nptmp',
+              '$_counterNptmp',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
@@ -43,7 +42,7 @@ class _NewPageTempState extends State<NewPageTemp> {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'increment_button',
-        onPressed: _incrementCounter_nptmp,
+        onPressed: _incrementCounterNptmp,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
