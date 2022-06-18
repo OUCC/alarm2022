@@ -41,36 +41,44 @@ class _TongueTwisterPageState extends State<TongueTwisterPage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+            const SizedBox(height: 30),
             Text(
               'お題',
               style: Theme.of(context).textTheme.headline5,
             ),
+            //const SizedBox(height: 5),
             Text(
               ttm.question.displayQuestion,
               style: Theme.of(context).textTheme.headline5,
             ),
+            //const SizedBox(height: 20),
             Text(
               '認識',
               style: Theme.of(context).textTheme.headline5,
             ),
+            //const SizedBox(height: 5),
             Text(
               ttm.lastWords,
               style: Theme.of(context).textTheme.headline5,
             ),
+            //const SizedBox(height: 20),
             Text(
               'ステータス : ${ttm.speech.lastStatus}',
               style: Theme.of(context).textTheme.headline5,
             ),
+            //const SizedBox(height: 5),
             Text(
               '時間 : ${ttm.speakDuration.inMilliseconds ~/ 100 / 10} s',
               style: Theme.of(context).textTheme.headline6,
             ),
+            //const SizedBox(height: 10),
             Text(
               '評価:${ttm.message}',
               style: Theme.of(context).textTheme.headline6,
             ),
+            const SizedBox(height: 50),
           ],
         ),
       ),
@@ -78,9 +86,11 @@ class _TongueTwisterPageState extends State<TongueTwisterPage> {
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
         FloatingActionButton(
             heroTag: "tt_back",
-            onPressed: () {
-              Navigator.of(context).pop(ttm.message == "一致");
-            },
+            onPressed: (ttm.message == "一致")
+                ? () {
+                    Navigator.of(context).pop(true);
+                  }
+                : null,
             child: const Icon(Icons.arrow_back)),
         FloatingActionButton(
             heroTag: "tt_changeQuestion",
