@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'びっくりアラーム'),
+      home: const MyHomePage(title: 'アラームを止めろ！'),
     );
   }
 }
@@ -64,7 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView.builder(
         itemCount: AlarmDataList.list.length,
         itemBuilder: (context, index) {
-          return Card(
+          return Dismissible(
+            key: UniqueKey(),
             child: SwitchListTile(
               // 時刻を表示
               title: Text(AlarmDataList.list[index].time.format(context)),
@@ -92,6 +93,15 @@ class _MyHomePageState extends State<MyHomePage> {
               secondary:
                   alarmStopMethodIcon[AlarmDataList.list[index].cancelMethod],
             ),
+            onDismissed: (direction) {
+              setState(() {
+                // Alarm cancel
+                RingingAlarm().cancelNotification(
+                    AlarmDataList.list[index].notificationId);
+                AlarmDataList.list.removeAt(index);
+                AlarmDataList.save();
+              });
+            },
           );
         },
       ),
