@@ -33,46 +33,6 @@ class _AlarmAddPageState extends State<AlarmAddPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // アラームを止める方法を選択する
-            const Text(
-              'アラームを止める方法を選択してください',
-              style: TextStyle(fontSize: 20),
-            ),
-            Column(
-              children: [
-                RadioListTile(
-                  value: "TongueTwister",
-                  groupValue: _alarmData.cancelMethod,
-                  onChanged: (value) {
-                    setState(() {
-                      _alarmData.cancelMethod = value.toString();
-                    });
-                  },
-                  title: const Text('トングUE TWISTER'),
-                ),
-                RadioListTile(
-                  value: "FakeTime",
-                  groupValue: _alarmData.cancelMethod,
-                  onChanged: (value) {
-                    setState(() {
-                      _alarmData.cancelMethod = value.toString();
-                    });
-                  },
-                  title: const Text('FAKE TIME'),
-                ),
-                RadioListTile(
-                  value: "Calculation",
-                  groupValue: _alarmData.cancelMethod,
-                  onChanged: (value) {
-                    setState(() {
-                      _alarmData.cancelMethod = value.toString();
-                    });
-                  },
-                  title: const Text('計算'),
-                )
-              ],
-            ),
-            const SizedBox(height: 16),
             // 時刻を表示
             Text(
               _alarmData.time.format(context),
@@ -85,8 +45,47 @@ class _AlarmAddPageState extends State<AlarmAddPage> {
                 _selectTime(context);
               },
             ),
-            // テキスト入力
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
+            // アラームを止める方法を選択する
+            const Text(
+              'アラームを止める方法',
+              style: TextStyle(fontSize: 20),
+            ),
+            Column(
+              children: [
+                RadioListTile(
+                  value: "TongueTwister",
+                  groupValue: _alarmData.cancelMethod,
+                  onChanged: (value) {
+                    setState(() {
+                      _alarmData.cancelMethod = "TongueTwister";
+                    });
+                  },
+                  title: const Text('Tongue Twister'),
+                ),
+                RadioListTile(
+                  value: "FakeTime",
+                  groupValue: _alarmData.cancelMethod,
+                  onChanged: (value) {
+                    setState(() {
+                      _alarmData.cancelMethod = "FakeTime";
+                    });
+                  },
+                  title: const Text('Fake Time'),
+                ),
+                RadioListTile(
+                  value: "Calculation",
+                  groupValue: _alarmData.cancelMethod,
+                  onChanged: (value) {
+                    setState(() {
+                      _alarmData.cancelMethod = "Calculation";
+                    });
+                  },
+                  title: const Text('Calculation'),
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
             SizedBox(
               // 横幅いっぱいに広げる
               width: double.infinity,
@@ -103,14 +102,6 @@ class _AlarmAddPageState extends State<AlarmAddPage> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // "pop"で前の画面に戻る
-          // "pop"の引数から前の画面にデータを渡す
-          Navigator.of(context).pop(_alarmData);
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

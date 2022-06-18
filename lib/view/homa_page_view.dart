@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_const
 
+import 'package:alarm2022/model/startup_process_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../model/alarm_data.dart';
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    CurrentContext.context = context;
     //初期化処理
     for (var alarmData in AlarmDataList.list) {
       var dateTime = TimeOfDayToDateTime(alarmData.time);
@@ -46,7 +48,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    CurrentContext.context = context;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import "package:intl/intl.dart";
 import 'dart:async';
 
-
 class FakeTime extends StatefulWidget {
   const FakeTime({Key? key, this.title}) : super(key: key);
   final String? title;
@@ -13,10 +12,16 @@ class FakeTime extends StatefulWidget {
 }
 
 class _FakeTimeState extends State<FakeTime> {
-  
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   var test_value;
   Timer? _testtimer;
-    void initState() {
+  void initState() {
     super.initState();
     //WidgetsBinding.instance.addObserver(this);
     //現在時刻表示用だが画面の更新処理も担っている
@@ -24,82 +29,76 @@ class _FakeTimeState extends State<FakeTime> {
     _testtimer =
         Timer.periodic(const Duration(milliseconds: 100), (Timer clockTimer) {
       setState(() {
-        test_value = DateTime.now().add(Duration(hours:2));
+        test_value = DateTime.now().add(Duration(hours: 2));
       });
     });
   }
 
-  
   @override
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
-    return Scaffold(      
-      body: Center(            
-        child:Container(
-          padding: const EdgeInsets.only(top:100),
-       // alignment: Alignment.topCenter,
-          width: _width,
-          height: _height,
-          color: const Color.fromARGB(255, 3, 5, 128),
-          child:Column(
-           // mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Align(
-                alignment: const Alignment(0,1),
-                child:Text(
-                  DateFormat('kk:mm').format(test_value),
-                  style: const TextStyle(
-                    color:Colors.white,
-                    fontSize: 60                 
-                  ),              
-                ),
-              ),
-              const Text(
-                'アラーム',
+    return Scaffold(
+        body: Center(
+            child: Container(
+      padding: const EdgeInsets.only(top: 100),
+      // alignment: Alignment.topCenter,
+      width: _width,
+      height: _height,
+      color: const Color.fromARGB(255, 3, 5, 128),
+      child: Column(
+        // mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Align(
+            alignment: const Alignment(0, 1),
+            child: Text(
+              DateFormat('kk:mm').format(test_value),
+              style: const TextStyle(color: Colors.white, fontSize: 60),
+            ),
+          ),
+          OutlinedButton(
+            onPressed: () {
+              if (_testtimer != null) _testtimer!.cancel();
+              //前のページに戻す
+              Navigator.of(context).pop(true);
+            },
+            child: const Text('アラーム',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
-                )
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Container(
-                
-                    padding: const EdgeInsets.only(top:200),
-                    child:const Icon(
-                      Icons.snooze,
-                      size: 50,
-                      color: Colors.white,
-                    ),
+                )),
+          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.only(top: 200),
+                  child: const Icon(
+                    Icons.snooze,
+                    size: 50,
+                    color: Colors.white,
                   ),
-                  Container(
-                
-                    padding: const EdgeInsets.only(top:200),
-                    child:const Icon(
-                      Icons.alarm,
-                      size: 50,
-                      color: Colors.white,
-                    ),
-                
-              
+                ),
+                Container(
+                  padding: const EdgeInsets.only(top: 200),
+                  child: const Icon(
+                    Icons.alarm,
+                    size: 50,
+                    color: Colors.white,
                   ),
-                  Container(
-                    padding: const EdgeInsets.only(top:200),
-                    child:const Icon(
+                ),
+                Container(
+                  padding: const EdgeInsets.only(top: 200),
+                  child: const Icon(
                     Icons.alarm_off,
                     size: 50,
                     color: Colors.white,
-                    ),
-                  )
-                ]
-              )
-            ],
-          ),
-        )
-      )
-    );    
+                  ),
+                )
+              ])
+        ],
+      ),
+    )));
   }
 }
 

@@ -8,7 +8,7 @@ import 'ringing_alarm_model.dart';
 
 class StartUpProcess {
   //このクラスでこれだけがアプリ起動時に呼ばれる
-  void startUp(int nId) {
+  void startUp(int nId) async {
     bool? isClearedMission;
     debugPrint("startUp");
     debugPrint("nId: $nId");
@@ -16,7 +16,7 @@ class StartUpProcess {
     isClearedMission = null;
 
     //鳴ってる通知の設定に従って小機能の呼び出し
-    startAMiniFunc(nId).then((value) {
+    await startAMiniFunc(nId).then((value) {
       isClearedMission = value;
       //クリアしたなら予約キャンセル
       if (isClearedMission != null && isClearedMission!) {
@@ -34,18 +34,19 @@ class StartUpProcess {
 
             RingingAlarm()
                 .scheduleNotification(alarmData.notificationId, dateTime);
+            break;
           }
-          break;
         }
       }
     });
   }
 
   ///小機能に移る。情報の保存できてから引数とか追加
-  Future<bool?> startAMiniFunc(notificationId) async {
+  Future<bool?> startAMiniFunc(int notificationId) async {
+    debugPrint("startAMiniFunc");
     return await Navigator.of(CurrentContext.context!).push(
       MaterialPageRoute(builder: (context) {
-        debugPrint("startAMiniFunc");
+        debugPrint("startAMiniFunc push");
         var cancelMethod = "";
         for (AlarmData alarmData in AlarmDataList.list) {
           if (alarmData.notificationId == notificationId) {
